@@ -1,0 +1,9 @@
+uvicorn
+fastapi
+pyyaml
+httpx
+rich
+qrcode[pil]
+gmssl
+browser-cookie3
+importlib-resources
