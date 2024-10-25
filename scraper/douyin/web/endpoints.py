@@ -22,7 +22,8 @@ class DouyinAPIEndpoints:
     WEBCAST_WSS_DOMAIN = "wss://webcast5-ws-web-lf.douyin.com"
 
     # 首页Feed (Home Feed)
-    TAB_FEED = f"{DOUYIN_DOMAIN}/aweme/v1/web/tab/feed/"
+    TAB_FEED = f"{DOUYIN_DOMAIN}/aweme/v1/web/module/feed/" # (Bấm vào mục trang chủ) dựa vào trường awemePcRecRawData: {"from_gid": id_video} để lướt từng video.
+    # f"{DOUYIN_DOMAIN}/aweme/v1/web/tab/feed/" (Bấm vào mục gợi ý)
 
     # 用户短信息 (User Short Info)
     USER_SHORT_INFO = f"{DOUYIN_DOMAIN}/aweme/v1/web/im/user/info/"
@@ -94,7 +95,7 @@ class DouyinAPIEndpoints:
     FOLLOW_FEED = f"{DOUYIN_DOMAIN}/aweme/v1/web/follow/feed/"
 
     # 相关推荐 (Related Feed)
-    POST_RELATED = f"{DOUYIN_DOMAIN}/aweme/v1/web/aweme/related/"
+    POST_RELATED = f"{DOUYIN_DOMAIN}/aweme/v1/web/aweme/related/" # (Các video có liên quan đến video đang xem)
 
     # 关注用户列表直播 (Follow User Live)
     FOLLOW_USER_LIVE = f"{DOUYIN_DOMAIN}/webcast/web/feed/follow/"

@@ -286,3 +286,47 @@ class URL_List(BaseModel):
         "https://test.example.com/zzzzz/"
     ]
 
+
+# device_platform: webapp
+# aid: 6383
+# channel: channel_pc_web
+# module_id: 3003101
+# count: 20
+# filterGids: 
+# presented_ids: 
+# refresh_index: 11
+# refer_id: 
+# refer_type: 10
+# awemePcRecRawData: {"is_client":false}
+# Seo-Flag: 0
+# install_time: 1728900287
+# use_lite_type: 0
+# pc_client_type: 1
+# pc_libra_divert: Mac
+# update_version_code: 170400
+# version_code: 170400
+# version_name: 17.4.0
+# cookie_enabled: true
+# screen_width: 430
+# screen_height: 932
+# browser_language: vi-VN
+# browser_platform: MacIntel
+# browser_name: Mobile Safari
+# browser_version: 16.6
+# browser_online: true
+# engine_name: WebKit
+# engine_version: 605.1.15
+# os_name: iOS
+# os_version: 16.6
+# cpu_core_num: 8
+# device_memory: 8
+# platform: iPhone
+# downlink: 10
+# effective_type: 4g
+# round_trip_time: 100
+# webid: 7425570100910442003
+# uifid: ""
+# msToken: ""
+# a_bogus: ""
+# verifyFp: ""
+# fp: ""

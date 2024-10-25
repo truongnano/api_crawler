@@ -47,6 +47,21 @@ async def fetch_one_video(request: Request,
                                     )
         raise HTTPException(status_code=status_code, detail=detail.dict())
 
+@router.get("/fetch_hot_search", response_model=ResponseModel, summary="")
+async def fetch_hot_search(request: Request):
+    try:
+        data = await DouyinWebScraper.fetch_hot_search()
+        return ResponseModel(code=200,
+                             router=request.url.path,
+                             data=data)
+    except Exception as e:
+        status_code = 400
+        detail = ErrorResponseModel(code=status_code,
+                                    router=request.url.path,
+                                    params=dict(request.query_params),
+                                    )
+        raise HTTPException(status_code=status_code, detail=detail.dict())
+
 
 # 获取用户作品集合数据
 @router.get("/fetch_user_post_videos", response_model=ResponseModel,

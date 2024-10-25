@@ -1,38 +1,3 @@
-# ==============================================================================
-# Copyright (C) 2021 Evil0ctal
-#
-# This file is part of the Douyin_TikTok_Download_API project.
-#
-# This project is licensed under the Apache License 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at:
-# http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-# ==============================================================================
-# 　　　　 　　  ＿＿
-# 　　　 　　 ／＞　　フ
-# 　　　 　　| 　_　 _ l
-# 　 　　 　／` ミ＿xノ
-# 　　 　 /　　　 　 |       Feed me Stars ⭐ ️
-# 　　　 /　 ヽ　　 ﾉ
-# 　 　 │　　|　|　|
-# 　／￣|　　 |　|　|
-# 　| (￣ヽ＿_ヽ_)__)
-# 　＼二つ
-# ==============================================================================
-#
-# Contributor Link:
-# - https://github.com/Evil0ctal
-# - https://github.com/Johnserf-Seed
-#
-# ==============================================================================
-
-
 import asyncio  # 异步I/O
 import os  # 系统操作
 import time  # 时间操作
@@ -83,8 +48,6 @@ class DouyinWebScraper:
         }
         return kwargs
 
-    "-------------------------------------------------------handler接口列表-------------------------------------------------------"
-
     # 获取单个作品数据
     async def fetch_one_video(self, aweme_id: str):
         # 获取抖音的实时Cookie
@@ -94,20 +57,36 @@ class DouyinWebScraper:
         async with base_scraper as scraper:
             # 创建一个作品详情的BaseModel参数
             params = PostDetail(aweme_id=aweme_id)
-            # 生成一个作品详情的带有加密参数的Endpoint
-            # 2024年6月12日22:41:44 由于XBogus加密已经失效，所以不再使用XBogus加密参数，转移至a_bogus加密参数。
-            # endpoint = BogusManager.xb_model_2_endpoint(
-            #     DouyinAPIEndpoints.POST_DETAIL, params.dict(), kwargs["headers"]["User-Agent"]
-            # )
-
             # 生成一个作品详情的带有a_bogus加密参数的Endpoint
             params_dict = params.dict()
-            params_dict["msToken"] = 'UZZz7UdrI4qK1KqdMDH91VOJikKXQGvJcOU28bifWwml51EpToFmKBAn3a75QUveCqko39f_m7mhIo7Gr5ppxAZPPVQFPOiV9zyz5y5VqQ5UAFZgs_w4_onJ4OX2Qw=='
+            params_dict["msToken"] = ''
             a_bogus = BogusManager.ab_model_2_endpoint(params_dict, kwargs["headers"]["User-Agent"])
             endpoint = f"{DouyinAPIEndpoints.POST_DETAIL}?{urlencode(params_dict)}&a_bogus={a_bogus}"
 
             response = await scraper.fetch_get_json(endpoint)
-            print('---response--- : ',response)
+        return response
+
+    # 获取抖音热榜数据
+    async def fetch_hot_search(self):
+        kwargs = await self.get_douyin_headers()
+        base_scraper = BaseScraper(proxies=kwargs["proxies"], scraper_headers=kwargs["headers"])
+        async with base_scraper as scraper:
+            params = BaseRequestModel()
+            endpoint = BogusManager.xb_model_2_endpoint(
+                DouyinAPIEndpoints.DOUYIN_HOT_SEARCH, params.dict(), kwargs["headers"]["User-Agent"]
+            )
+            response = await scraper.fetch_get_json(endpoint)
+        return response
+
+    async def fetch_home_feed(self):
+        kwargs = await self.get_douyin_headers()
+        base_scraper = BaseScraper(proxies=kwargs["proxies"], scraper_headers=kwargs["headers"])
+        async with base_scraper as scraper:
+            params = BaseRequestModel()
+            endpoint = BogusManager.xb_model_2_endpoint(
+                DouyinAPIEndpoints.DOUYIN_HOT_SEARCH, params.dict(), kwargs["headers"]["User-Agent"]
+            )
+            response = await scraper.fetch_get_json(endpoint)
         return response
 
     # 获取用户发布作品数据
@@ -245,20 +224,6 @@ class DouyinWebScraper:
             )
             response = await scraper.fetch_get_json(endpoint)
         return response
-
-    # 获取抖音热榜数据
-    async def fetch_hot_search_result(self):
-        kwargs = await self.get_douyin_headers()
-        base_scraper = BaseScraper(proxies=kwargs["proxies"], scraper_headers=kwargs["headers"])
-        async with base_scraper as scraper:
-            params = BaseRequestModel()
-            endpoint = BogusManager.xb_model_2_endpoint(
-                DouyinAPIEndpoints.DOUYIN_HOT_SEARCH, params.dict(), kwargs["headers"]["User-Agent"]
-            )
-            response = await scraper.fetch_get_json(endpoint)
-        return response
-
-    "-------------------------------------------------------utils接口列表-------------------------------------------------------"
 
     # 生成真实msToken
     async def gen_real_msToken(self, ):
