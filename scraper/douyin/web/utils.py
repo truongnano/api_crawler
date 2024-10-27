@@ -119,31 +119,6 @@ class TokenManager:
                     raise APIResponseError("响应内容：{0}， Douyin msToken API 的响应内容不符合要求。".format(msToken))
 
                 return msToken
-
-            # except httpx.RequestError as exc:
-            #     # 捕获所有与 httpx 请求相关的异常情况 (Captures all httpx request-related exceptions)
-            #     raise APIConnectionError(
-            #         "请求端点失败，请检查当前网络环境。 链接：{0}，代理：{1}，异常类名：{2}，异常详细信息：{3}"
-            #         .format(cls.token_conf["url"], cls.proxies, cls.__name__, exc)
-            #     )
-            #
-            # except httpx.HTTPStatusError as e:
-            #     # 捕获 httpx 的状态代码错误 (captures specific status code errors from httpx)
-            #     if e.response.status_code == 401:
-            #         raise APIUnauthorizedError(
-            #             "参数验证失败，请更新 Douyin_TikTok_Download_API 配置文件中的 {0}，以匹配 {1} 新规则"
-            #             .format("msToken", "douyin")
-            #         )
-            #
-            #     elif e.response.status_code == 404:
-            #         raise APINotFoundError("{0} 无法找到API端点".format("msToken"))
-            #     else:
-            #         raise APIResponseError(
-            #             "链接：{0}，状态码 {1}：{2} ".format(
-            #                 e.response.url, e.response.status_code, e.response.text
-            #             )
-            #         )
-
             except Exception as e:
                 # 返回虚假的msToken (Return a fake msToken)
                 logger.error("请求Douyin msToken API时发生错误：{0}".format(e))
@@ -239,69 +214,52 @@ class BogusManager:
     @classmethod
     def xb_str_2_endpoint(cls, endpoint: str, user_agent: str) -> str:
         try:
-            final_endpoint = XB(user_agent).getXBogus(endpoint)
+            f_endpoint = XB(user_agent).getXBogus(endpoint)
         except Exception as e:
             raise RuntimeError("生成X-Bogus失败: {0})".format(e))
 
-        return final_endpoint[0]
+        return f_endpoint[0]
 
     # 字典方法生成X-Bogus参数
     @classmethod
-    def xb_model_2_endpoint(cls, base_endpoint: str, params: dict, user_agent: str) -> str:
+    def xb_model_2_endpoint(cls, endpoint: str, params: dict, user_agent: str) -> str:
         if not isinstance(params, dict):
-            raise TypeError("参数必须是字典类型")
+            raise TypeError("The parameter must be a dictionary type")
 
         param_str = "&".join([f"{k}={v}" for k, v in params.items()])
 
         try:
             xb_value = XB(user_agent).getXBogus(param_str)
         except Exception as e:
-            raise RuntimeError("生成X-Bogus失败: {0})".format(e))
+            raise RuntimeError("Failed to generate X-Bogus: {0})".format(e))
 
-        # 检查base_endpoint是否已有查询参数 (Check if base_endpoint already has query parameters)
-        separator = "&" if "?" in base_endpoint else "?"
+        # Check if endpoint already has query parameters
+        separator = "&" if "?" in endpoint else "?"
 
-        final_endpoint = f"{base_endpoint}{separator}{param_str}&X-Bogus={xb_value[1]}"
+        f_endpoint = f"{endpoint}{separator}{param_str}&X-Bogus={xb_value[1]}"
 
-        return final_endpoint
-
-    # 字符串方法生成A-Bogus参数
-    # TODO: 未完成测试，暂时不提交至主分支。
-    # @classmethod
-    # def ab_str_2_endpoint_js_ver(cls, endpoint: str, user_agent: str) -> str:
-    #     try:
-    #         # 获取请求参数
-    #         endpoint_query_params = urllib.parse.urlparse(endpoint).query
-    #         # 确定A-Bogus JS文件路径
-    #         js_path = os.path.dirname(os.path.abspath(__file__))
-    #         a_bogus_js_path = os.path.join(js_path, 'a_bogus.js')
-    #         with open(a_bogus_js_path, 'r', encoding='utf-8') as file:
-    #             js_code = file.read()
-    #         # 此处需要使用Node环境
-    #         # - 安装Node.js
-    #         # - 安装execjs库
-    #         # - 安装NPM依赖
-    #         # - npm install jsdom
-    #         node_runtime = execjs.get('Node')
-    #         context = node_runtime.compile(js_code)
-    #         arg = [0, 1, 0, endpoint_query_params, "", user_agent]
-    #         a_bougus = quote(context.call('get_a_bogus', arg), safe='')
-    #         return a_bougus
-    #     except Exception as e:
-    #         raise RuntimeError("生成A-Bogus失败: {0})".format(e))
+        return f_endpoint
 
     # 字典方法生成A-Bogus参数，感谢 @JoeanAmier 提供的纯Python版本算法。
     @classmethod
-    def ab_model_2_endpoint(cls, params: dict, user_agent: str) -> str:
+    def ab_model_2_endpoint(cls, endpoint: str, params: dict) -> str:
         if not isinstance(params, dict):
-            raise TypeError("参数必须是字典类型")
+            raise TypeError("The parameter must be a dictionary type")
+        
+        param_str = "&".join([f"{k}={v}" for k, v in params.items()])
 
         try:
-            ab_value = AB().get_value(params, )
+            a_bogus = AB().get_value(params)
         except Exception as e:
-            raise RuntimeError("生成A-Bogus失败: {0})".format(e))
+            raise RuntimeError("Failed to generate A-Bogus: {0})".format(e))
 
-        return quote(ab_value, safe='')
+        # Check if endpoint already has query parameters
+        separator = "&" if "?" in endpoint else "?"
+
+        f_endpoint = f"{endpoint}{separator}{param_str}&a_bogus={a_bogus}"
+        print(f_endpoint)
+        return f_endpoint
+        # return quote(a_bogus, safe='')
 
 
 class SecUserIdFetcher:

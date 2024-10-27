@@ -14,8 +14,8 @@ class ResponseModel(BaseModel):
 # 定义错误响应模型
 class ErrorResponseModel(BaseModel):
     code: int = 400
-    message: str = "An error occurred."
-    support: str = "Please contact us on Github: https://github.com/Evil0ctal/Douyin_TikTok_Download_API"
+    message: str = "An error occurred"
+    support: str = "Please contact us on Github"
     time: str = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     router: str
     params: dict = {}

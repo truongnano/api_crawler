@@ -1,41 +1,21 @@
-from typing import List
+from typing import List, Optional
 
-from fastapi import APIRouter, Body, Query, Request, HTTPException  # 导入FastAPI组件
+from fastapi import APIRouter, Body, Depends, Query, Request, HTTPException  # 导入FastAPI组件
 from api.models.APIResponseModel import ResponseModel, ErrorResponseModel  # 导入响应模型
 
 from scraper.douyin.web.main import DouyinWebScraper  # 导入抖音Web爬虫
-
+from scraper.douyin.web.models import (
+    AwemeDetail, TrendingList, HomeFeed, RecommendFeed, RelatedAweme
+)
 
 router = APIRouter()
 DouyinWebScraper = DouyinWebScraper()
 
 
-# 获取单个作品数据
-@router.get("/fetch_one_video", response_model=ResponseModel, summary="获取单个作品数据/Get single video data")
-async def fetch_one_video(request: Request,
-                          aweme_id: str = Query(example="7372484719365098803", description="作品id/Video id")):
-    """
-    # [中文]
-    ### 用途:
-    - 获取单个作品数据
-    ### 参数:
-    - aweme_id: 作品id
-    ### 返回:
-    - 作品数据
-
-    # [English]
-    ### Purpose:
-    - Get single video data
-    ### Parameters:
-    - aweme_id: Video id
-    ### Return:
-    - Video data
-
-    # [示例/Example]
-    aweme_id = "7372484719365098803"
-    """
+@router.get("/fetch_aweme_detail", response_model=ResponseModel, summary="")
+async def fetch_aweme_detail(request: Request, aweme_params: AwemeDetail = Depends()):
     try:
-        data = await DouyinWebScraper.fetch_one_video(aweme_id)
+        data = await DouyinWebScraper.fetch_aweme_detail(aweme_params)
         return ResponseModel(code=200,
                              router=request.url.path,
                              data=data)
@@ -45,12 +25,13 @@ async def fetch_one_video(request: Request,
                                     router=request.url.path,
                                     params=dict(request.query_params),
                                     )
-        raise HTTPException(status_code=status_code, detail=detail.dict())
+        raise HTTPException(status_code=status_code, detail=detail.model_dump())
 
-@router.get("/fetch_hot_search", response_model=ResponseModel, summary="")
-async def fetch_hot_search(request: Request):
+
+@router.get("/fetch_trending_list", response_model=ResponseModel, summary="")
+async def fetch_trending_list(request: Request, search_params: TrendingList = Depends()):
     try:
-        data = await DouyinWebScraper.fetch_hot_search()
+        data = await DouyinWebScraper.fetch_trending_list(search_params)
         return ResponseModel(code=200,
                              router=request.url.path,
                              data=data)
@@ -60,8 +41,55 @@ async def fetch_hot_search(request: Request):
                                     router=request.url.path,
                                     params=dict(request.query_params),
                                     )
-        raise HTTPException(status_code=status_code, detail=detail.dict())
+        raise HTTPException(status_code=status_code, detail=detail.model_dump())
 
+
+@router.get("/fetch_home_feed", response_model=ResponseModel, summary="Home feed")
+async def fetch_home_feed(request: Request, feed_params: HomeFeed = Depends()):
+    try:
+        data = await DouyinWebScraper.fetch_home_feed(feed_params)
+        return ResponseModel(code=200,
+                            router=request.url.path,
+                            data=data)
+    except Exception as e:
+        status_code = 400
+        detail = ErrorResponseModel(code=status_code,
+                                    router=request.url.path,
+                                    params=dict(request.query_params),
+                                    )
+        raise HTTPException(status_code=status_code, detail=detail.model_dump())
+    
+
+@router.get("/fetch_recommend_feed", response_model=ResponseModel, summary="Recommend feed")
+async def fetch_recommend_feed(request: Request, feed_params: RecommendFeed = Depends()):
+    try:
+        data = await DouyinWebScraper.fetch_recommend_feed(feed_params)
+        return ResponseModel(code=200,
+                            router=request.url.path,
+                            data=data)
+    except Exception as e:
+        status_code = 400
+        detail = ErrorResponseModel(code=status_code,
+                                    router=request.url.path,
+                                    params=dict(request.query_params),
+                                    )
+        raise HTTPException(status_code=status_code, detail=detail.model_dump())
+
+
+@router.get("/fetch_related_aweme", response_model=ResponseModel, summary="Related aweme")
+async def fetch_related_aweme(request: Request, related_params: RelatedAweme = Depends()):
+    try:
+        data = await DouyinWebScraper.fetch_related_aweme(related_params)
+        return ResponseModel(code=200,
+                            router=request.url.path,
+                            data=data)
+    except Exception as e:
+        status_code = 400
+        detail = ErrorResponseModel(code=status_code,
+                                    router=request.url.path,
+                                    params=dict(request.query_params),
+                                    )
+        raise HTTPException(status_code=status_code, detail=detail.model_dump())
 
 # 获取用户作品集合数据
 @router.get("/fetch_user_post_videos", response_model=ResponseModel,

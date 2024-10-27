@@ -1,10 +1,14 @@
 TokenManager:
   douyin:
     headers:
-      Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
+      # Accept-Language: zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2
       User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/90.0.4430.212 Safari/537.36
       Referer: https://www.douyin.com/
       Cookie: ttwid=1%7C34XcswuLmO1XIUcK6DwKOCgmXvW9MroVUlfLYOaX_2k%7C1729499849%7Cfb4cedfa6475be8f5e0545a1e9d85e1f74b97166d06bc0b4285e101811bbf68e; Domain=.douyin.com; Path=/; Expires=Thu, 16 Oct 2025 08:37:29 GMT; HttpOnly
+      Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7
+      Accept-Language: vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7,my-MM;q=0.6,my;q=0.5,km-KH;q=0.4,km;q=0.3,fr-FR;q=0.2,fr;q=0.1,zh-CN;q=0.1,zh;q=0.1
+      # accept-encoding: gzip, deflate, br, zstd
+      # User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36
 
     proxies:
       http:
