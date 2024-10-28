@@ -1,5 +1,6 @@
 from typing import List, Optional
-
+from fastapi.responses import StreamingResponse
+import httpx
 from fastapi import APIRouter, Body, Depends, Query, Request, HTTPException  # 导入FastAPI组件
 from api.models.APIResponseModel import ResponseModel, ErrorResponseModel  # 导入响应模型
 
@@ -90,6 +91,23 @@ async def fetch_related_aweme(request: Request, related_params: RelatedAweme = D
                                     params=dict(request.query_params),
                                     )
         raise HTTPException(status_code=status_code, detail=detail.model_dump())
+
+@router.get("/proxy")
+async def proxy_video(request: Request, url: str):
+    if not url:
+        raise HTTPException(status_code=400, detail="Video URL is missing")
+    try:
+        # Gửi yêu cầu GET đến video URL bằng httpx
+        async with httpx.AsyncClient() as client:
+            response = await client.get(url, timeout=30,follow_redirects=True)
+            # Kiểm tra trạng thái phản hồi từ Douyin
+            if response.status_code != 200:
+                raise HTTPException(status_code=500, detail="Error fetching video")
+            # Trả về video dưới dạng streaming response
+            return StreamingResponse(response.aiter_bytes(), media_type="video/mp4")
+    except httpx.RequestError as exc:
+        raise HTTPException(status_code=500, detail=f"Error fetching video: {exc}")
+    
 
 # 获取用户作品集合数据
 @router.get("/fetch_user_post_videos", response_model=ResponseModel,
