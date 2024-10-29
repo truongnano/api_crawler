@@ -1,5 +1,5 @@
 from typing import List, Optional
-from fastapi.responses import StreamingResponse
+from fastapi.responses import RedirectResponse, StreamingResponse
 import httpx
 from fastapi import APIRouter, Body, Depends, Query, Request, HTTPException  # 导入FastAPI组件
 from api.models.APIResponseModel import ResponseModel, ErrorResponseModel  # 导入响应模型
@@ -94,19 +94,35 @@ async def fetch_related_aweme(request: Request, related_params: RelatedAweme = D
 
 @router.get("/proxy")
 async def proxy_video(request: Request, url: str):
-    if not url:
-        raise HTTPException(status_code=400, detail="Video URL is missing")
     try:
-        # Gửi yêu cầu GET đến video URL bằng httpx
+        print('proxy 1111')
         async with httpx.AsyncClient() as client:
-            response = await client.get(url, timeout=30,follow_redirects=True)
-            # Kiểm tra trạng thái phản hồi từ Douyin
-            if response.status_code != 200:
-                raise HTTPException(status_code=500, detail="Error fetching video")
-            # Trả về video dưới dạng streaming response
-            return StreamingResponse(response.aiter_bytes(), media_type="video/mp4")
-    except httpx.RequestError as exc:
-        raise HTTPException(status_code=500, detail=f"Error fetching video: {exc}")
+            print('proxy 2222222')
+            response = await client.get("https://v3-dy-o.zjcdn.com/2566a3d0e2a3129a9498362733d0a13a/671ff540/video/tos/cn/tos-cn-ve-15/oIAyIi06orIpAbBglQUZ8dPW8ocxmMBJYEivx/?a=6383&ch=26&cr=3&dr=0&lr=all&cd=0%7C0%7C0%7C3&cv=1&br=2283&bt=2283&cs=0&ds=4&ft=4f8g3Edv2~6jSYxwII9ZtGDOwvP9eFt7Uh4QW72EzzJDngvL4mugmoaP&mime_type=video_mp4&qs=0&rc=NGU4Ojs8MzllaDw6PDMzZUBpajw5d2w5cmY5dDMzNGkzM0AwMTE2L2I2XjIxYGBeLi4vYSMtZDJiMmRrXnJgLS1kLS9zcw%3D%3D&btag=80000e00038000&cc=1f&cquery=100B_100x_100z_100o_100w&dy_q=1730135382&feature_id=46a7bb47b4fd1280f3d3825bf2b29388&l=2024102901094215FF227CE1E70034E1C5&req_cdn_type=", timeout=30, follow_redirects=True)
+        print('proxy 333333333')
+        if response.status_code == 200:
+            final_url = response.url
+            print('----final_url: ',final_url)
+            return RedirectResponse(url=final_url)
+        else:
+            raise HTTPException(status_code=response.status_code, detail="Không thể lấy URL video cuối cùng")
+        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Lỗi: {str(e)}")
+    # if not url:
+    #     raise HTTPException(status_code=400, detail="Video URL is missing")
+    # try:
+    #     # Gửi yêu cầu GET đến video URL bằng httpx
+    #     async with httpx.AsyncClient() as client:
+    #         response = await client.get(url, timeout=30,follow_redirects=True)
+    #         # Kiểm tra trạng thái phản hồi từ Douyin
+    #         print('---response--: ',response.status_code)
+    #         if response.status_code != 200:
+    #             raise HTTPException(status_code=500, detail="Error fetching video")
+    #         # Trả về video dưới dạng streaming response
+    #         return StreamingResponse(response.aiter_bytes(), media_type="video/mp4")
+    # except httpx.RequestError as exc:
+    #     raise HTTPException(status_code=500, detail=f"Error fetching video: {exc}")
     
 
 # 获取用户作品集合数据
